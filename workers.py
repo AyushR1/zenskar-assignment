@@ -18,18 +18,16 @@ def process_message(msg):
     event = json.loads(msg.value())
     if event['action'] == EVENT_CUSTOMER_CREATED:
         try:
-            customer = stripe.Customer.retrieve(str(event['customer_id']))
-            customer.name = event['customer_name']
-            customer.email = event['customer_email']
-            customer.save()
-            print(f"Customer {event['customer_id']} updated")
-        except stripe.error.InvalidRequestError:
-            customer = stripe.Customer.create(
-                id=event['customer_id'],
-                name=event['customer_name'],
-                email=event['customer_email']
+            stripe.Customer.create(
+            id=event['customer_id'],
+            name=event['customer_name'],
+            email=event['customer_email']
             )
-            print(f"Customer {event['customer_id']} created")
+            print(f"Customer {event['customer_id']} created on stripe")    
+        except:
+            print(f"Customer {event['customer_id']} error on stripe")
+    
+
     elif event['action'] == EVENT_CUSTOMER_DELETED:
         try:
             stripe.Customer.delete(str(event['customer_id']))
