@@ -28,23 +28,23 @@ class StripeWebhookView(APIView):
                 customer_name = customer_data['object']['name']
                 customer_email = customer_data['object']['email']
 
-                if not Customer.objects.filter(email=customer_email).exists():
+                if not Customer.objects.filter(id=customer_id).exists():
                     customer = Customer(id=customer_id, name=customer_name, email=customer_email)
                     customer.save()
-                    print('Created customer with email={}'.format(customer_email))
+                    print('Created customer with id={}'.format(customer_id))
                 else:
-                    print('Customer with email={} already exists'.format(customer_email))
+                    print('Customer with id={} already exists'.format(customer_id))
 
                 return Response(status=status.HTTP_200_OK)
             elif (event_type=='customer.deleted'):
-                customer_email = customer_data['object']['email']
+                customer_id = customer_data['object']['id']
 
-                if Customer.objects.filter(email=customer_email).exists():
-                    customer = Customer.objects.get(email=customer_email)
+                if Customer.objects.filter(id=customer_id).exists():
+                    customer = Customer.objects.get(id=customer_id)
                     customer.delete()
-                    print('Deleted customer with email={}'.format(email=customer_email))
+                    print('Deleted customer with id={}'.format(customer_id))
                 else:
-                    print('Customer with email={} does not exist'.format(email=customer_email))
+                    print('Customer with id={} does not exist'.format(customer_id))
 
                 return Response(status=status.HTTP_200_OK)
             else:

@@ -17,15 +17,19 @@ consumer = Consumer({
 def process_message(msg):
     event = json.loads(msg.value())
     if event['action'] == EVENT_CUSTOMER_CREATED:
-            try:
-                customer = stripe.Customer.create(
-                    id=event['customer_id'],
-                    name=event['customer_name'],
-                    email=event['customer_email']
-                )
-                print(f"Customer {event['customer_id']} created")
-            except:
-                print(f"Customer {event['customer_id']} already exists in Stripe")
+        try:
+            customer = stripe.Customer.retrieve(str(event['customer_id']))
+            customer.name = event['customer_name']
+            customer.email = event['customer_email']
+            customer.save()
+            print(f"Customer {event['customer_id']} updated")
+        except stripe.error.InvalidRequestError:
+            customer = stripe.Customer.create(
+                id=event['customer_id'],
+                name=event['customer_name'],
+                email=event['customer_email']
+            )
+            print(f"Customer {event['customer_id']} created")
     elif event['action'] == EVENT_CUSTOMER_DELETED:
         try:
             stripe.Customer.delete(str(event['customer_id']))
@@ -38,7 +42,7 @@ consumer.subscribe(['customer_events'])
 
 while True:
     msg = consumer.poll(1.0)
-    print("Polling...")
+
     if msg is None:
         continue
 
