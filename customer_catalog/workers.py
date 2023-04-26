@@ -42,7 +42,7 @@ consumer.subscribe(['customer_events'])
 
 while True:
     msg = consumer.poll(1.0)
-
+    print("Polling...")
     if msg is None:
         continue
 
