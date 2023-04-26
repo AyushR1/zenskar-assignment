@@ -5,12 +5,8 @@ from .kafka import send_to_kafka, create_customer_event, EVENT_CUSTOMER_CREATED,
 import json
 
 class Customer(models.Model):
-    id = models.CharField(primary_key=True, max_length=255)
     name = models.CharField(max_length=255)
     email = models.EmailField()
-    
-    def __str__(self):
-        return self.id
 
 
 @receiver(post_save, sender=Customer)
