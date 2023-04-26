@@ -24,7 +24,7 @@ def process_message(msg):
         )
         print("created")
     elif event['action'] == EVENT_CUSTOMER_DELETED:
-        stripe.Customer.delete(event['customer_id'])
+        stripe.Customer.delete(str(event['customer_id']))
         print("deleted")
 
 consumer.subscribe(['customer_events'])
