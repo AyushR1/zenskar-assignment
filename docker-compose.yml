@@ -22,14 +22,3 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-
-  kafka-topics:
-    image: confluentinc/cp-kafka:7.3.2
-    container_name: kafka-topics
-    depends_on:
-      - broker
-    command: >
-      sh -c "sleep 10 && \
-      kafka-topics --bootstrap-server broker:9092 \
-      --create \
-      --topic consumer"
