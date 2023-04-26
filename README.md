@@ -1,7 +1,7 @@
 Two Way Integrations
 ==========================
 
-#Video Presentation
+# Video Presentation
 
 https://youtu.be/il_PBq8g7Zo
 
@@ -33,10 +33,38 @@ source env/bin/activate`
 
 
 
-
-
 Additional Notes
 ----------------
 
 + Use your stripe key for in workers.
 + use ngrok to tunnel the webhook to `api/v1/myproduct/stripewebhook/`
+
+
+# For Extending this project
+
+Salesfore customers
+-------------------
+
+Plan for Adding a Second Integration with Salesforce's Customer Catalog
+
+To add a second integration with Salesforce's customer catalog, we need to create a new module in our product's codebase that communicates with the Salesforce API to retrieve customer information. We should follow a similar design pattern as the Stripe integration, where we have a queueing system that allows for async communication between our product and Salesforce.
+
+The first step is to create a Salesforce module that handle API calls to retrieve customer data. We can use a library like simple-salesforce to simplify the integration process. Once we have retrieved the customer data, we need to transform it to match the format of our product's customer table (ID, name, email).
+
+Next, we need to integrate this module with our product's existing architecture. We should create a worker that listens to a Kafka topic, where the Salesforce module will publish customer updates. The worker should consume these events and update the customer table in our product's database.
+
+It's important to ensure that the Salesforce integration is built in a way that doesn't impact the existing Stripe integration. We should separate the two integrations by creating separate Kafka topics and queues for each integration. This will allow us to scale each integration independently.
+
+Extending the Integrations to Support Other Systems
+---------------------------------------------------
+
+To extend the integrations to support other systems within our product, we need to follow a modular approach to our code design. We should create separate modules for each system that we want to integrate with. These modules should follow a similar pattern as the Salesforce and Stripe integrations, where they retrieve data from the external system, transform it to match our product's data model, and publish it to a Kafka topic.
+
+To integrate the invoice catalog into our product, we can create a new module that retrieves invoice data from our product's database and publishes it to a Kafka topic. The format of the data in this topic should match the format of the invoice data in the external system that we want to integrate with.
+Similarly, we can create another module that retrieves invoice data from an external system and publishes it to another Kafka topic. This module should also transform the data to match the format of our product's invoice data model.
+
+Once we have data from multiple systems in Kafka topics, we need to merge them into a single topic that is consumed by a worker responsible for updating our product's database. We can use Kafka Streams to create a new topic that aggregates all customer updates from the various systems. The worker can then consume this topic and update the customer table in our product's database.
+
+We should follow a modular approach to our code design when integrating with other systems within our product. We need to create separate modules for each system that we want to integrate with and ensure that they follow a similar pattern to our existing integrations. We should also use a queuing system like Kafka to allow for asynchronous communication between our product and external systems. Finally, we should use Kafka Streams to merge the data from multiple topics into a single topic that is consumed by a worker responsible for updating our product's database.
+
+F
