@@ -3,14 +3,15 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .kafka import send_to_kafka, create_customer_event, EVENT_CUSTOMER_CREATED, EVENT_CUSTOMER_DELETED
 import json
-import uuid
 
 class Customer(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
     name = models.CharField(max_length=255)
     email = models.EmailField()
-
+    
     def __str__(self):
-        return str(self.id)
+        return self.id
+
 
 @receiver(post_save, sender=Customer)
 def customer_saved(sender, instance, **kwargs):
