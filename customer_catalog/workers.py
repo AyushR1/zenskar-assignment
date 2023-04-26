@@ -17,15 +17,26 @@ consumer = Consumer({
 def process_message(msg):
     event = json.loads(msg.value())
     if event['action'] == EVENT_CUSTOMER_CREATED:
-        stripe.Customer.create(
-            id=event['customer_id'],
-            name=event['customer_name'],
-            email=event['customer_email']
-        )
-        print("created")
+        try:
+            customer = stripe.Customer.retrieve(str(event['customer_id']))
+            customer.name = event['customer_name']
+            customer.email = event['customer_email']
+            customer.save()
+            print(f"Customer {event['customer_id']} updated")
+        except stripe.error.InvalidRequestError:
+            customer = stripe.Customer.create(
+                id=event['customer_id'],
+                name=event['customer_name'],
+                email=event['customer_email']
+            )
+            print(f"Customer {event['customer_id']} created")
     elif event['action'] == EVENT_CUSTOMER_DELETED:
-        stripe.Customer.delete(str(event['customer_id']))
-        print("deleted")
+        try:
+            stripe.Customer.delete(str(event['customer_id']))
+            print(f"Customer {event['customer_id']} deleted")
+        except stripe.error.InvalidRequestError:
+            print(f"Customer {event['customer_id']} not found in Stripe")
+
 
 consumer.subscribe(['customer_events'])
 
