@@ -8,7 +8,7 @@ echo "Creating topics"
 sudo docker exec broker \
 kafka-topics --bootstrap-server broker:9092 \
              --create \
-             --topic consumer  
+             --topic customer_events  
 
 
 echo "Starting workers"
